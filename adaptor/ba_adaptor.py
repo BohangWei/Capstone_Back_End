@@ -10,7 +10,9 @@ class BAAdaptor:
         A BAAdaptor object
     """
     def __init__(self, api_key):
-        pass
+        self.api_key = api_key
+
+        #Code here to activate the IBM SDK
 
     """
     This function takes a message from the client and forwards it to Watson Assistant.
@@ -22,5 +24,5 @@ class BAAdaptor:
     Returns:
         string response from Assistant
     """
-    def send_message(message):
-        pass
+    def send_message(self, message):
+        return "Response for: {}".format(message)
