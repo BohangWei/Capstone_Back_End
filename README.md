@@ -9,7 +9,7 @@
 4. To start the web server, execute the following commands:
 
   ```
-  $export FLASK_APP=app.py
+  $export FLASK_APP=app
   $flask run
   ```
 
@@ -18,7 +18,7 @@
 Like above, just make sure that your virtual environment is active and then run the following commands:
 
 ```
-$export FLASK_APP=app.py
+$export FLASK_APP=app
 $flask run
 ```
 

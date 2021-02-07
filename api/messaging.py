@@ -16,7 +16,15 @@ def send_message():
     elif request.method == 'POST':
         print(request.get_json())
 
+        #Authenticate the user
+
+        #Save the incoming message to their convo history in DB
+
+        #Send the incoming message on to the adaptor class
+
+        #Get the returned value from the adaptor class and forward it back to the React app
+
         response = {
             'response': 'this is the response from flask to the message: {}'.format(request.get_json()['value'])
         }
-        return(jsonify(response))
+        return(response)
