@@ -1,5 +1,8 @@
 import functools
 from adaptor import BAAdaptor
+from flask_jwt_extended import (
+    jwt_required, jwt_optional
+)
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, request,
@@ -15,8 +18,6 @@ def send_message():
         return adaptor.send_message("hello")
     elif request.method == 'POST':
         print(request.get_json())
-
-        #Authenticate the user
 
         #Save the incoming message to their convo history in DB
 

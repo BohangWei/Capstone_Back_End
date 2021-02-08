@@ -28,9 +28,8 @@ Returns:
 """
 @bp.route('/register', methods = ['POST'])
 def register():
-    params = request.get_json()
-    user = params['username']
-    pwd = params['password']
+    user = request.json.get('username', None)
+    pwd = request.json.get('password', None)
 
     #Validate the input
     if not user:
@@ -71,9 +70,8 @@ Returns:
 """
 @bp.route('/login', methods = ['POST'])
 def login():
-    params = request.get_json()
-    user = params['username']
-    pwd = params['password']
+    user = request.json.get('username', None)
+    pwd = request.json.get('password', None)
     db = get_db()
     check_user_query = 'SELECT * FROM user WHERE username = ?'
 
@@ -90,7 +88,11 @@ def login():
     #Make sure the provided credentials match up to a user
     user_matches = db.execute(check_user_query, (user, ))
     user_query_result = user_matches.fetchone()
-    if not check_password_hash(user_query_result['password'], pwd):
+    if user_matches.rowcount != 1:
+        return {
+            'error': 'incorrect username'
+        }
+    elif not check_password_hash(user_query_result['password'], pwd):
         return {
             'error': 'incorrect password'
         }
