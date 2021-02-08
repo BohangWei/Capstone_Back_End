@@ -48,7 +48,7 @@ def register():
     db.commit()
 
     #Return the JWT
-    access_token = create_access_token(identity = user)
+    access_token = create_access_token(identity = user, expires_delta = False)
     return {
         'access_token': access_token
     }
@@ -87,18 +87,18 @@ def login():
 
     #Make sure the provided credentials match up to a user
     user_matches = db.execute(check_user_query, (user, ))
-    user_query_result = user_matches.fetchone()
-    if user_matches.rowcount != 1:
+    user_matches_result = user_matches.fetchone()
+    if not user_matches_result:
         return {
             'error': 'incorrect username'
         }
-    elif not check_password_hash(user_query_result['password'], pwd):
+    elif not check_password_hash(user_matches_result['password'], pwd):
         return {
             'error': 'incorrect password'
         }
 
     #Return the JWT
-    access_token = create_access_token(identity = user)
+    access_token = create_access_token(identity = user, expires_delta = False)
     return {
         'access_token': access_token
     }

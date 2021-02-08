@@ -38,3 +38,31 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+if __name__ == '__main__':
+    #Insert dummy data into conversation and messages
+    messages = [
+        (1, 1, "hello", "me"),
+        (2, 1, "how's it going?", "you"),
+        (3, 1, "I'm doing pretty well, can't complain", "me")
+    ]
+
+    conversations = [
+        (1, )
+    ]
+
+    db = sqlite3.connect(
+        '../instance/binder.sqlite',
+        detect_types = sqlite3.PARSE_DECLTYPES
+    )
+    db.row_factory = sqlite3.Row
+
+    msg_query = 'INSERT INTO message VALUES (?, ?, ?, ?)'
+    for message in messages:
+        db.execute(msg_query, message)
+        db.commit()
+
+    convo_query = 'INSERT INTO conversation (user) VALUES (?)'
+    for conversation in conversations:
+        db.execute(convo_query, conversation)
+        db.commit()
