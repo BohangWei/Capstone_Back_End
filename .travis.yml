@@ -1,0 +1,11 @@
+language: python
+install:
+  - pip install -r requirements.txt
+script: pytest
+notifications:
+  email: false
+  slack:
+    rooms:
+      - secure: nzl5r0IbLCA1rfZagFkd/C5t8lkKaI3bFZc5RzI1qVUaJ9r4w/SRHnDyihU3Tb5IdaLK0fjqu+CgaCrU+OfN9c0kuqyn729pM+n3PFEmakK45lGw9XCqmXxjeVTufZ6WQQGrHFRlwU3XAM4lVtwwniTRTTtyr4ibiZHGZ3WGibIjShXlsM2uyl0+7NS8kLvO5jFANo6o7kVhl5RYkKbVDtwiAHf+BjIMArjrcdYezNse/V/sLT6Y3n4+RqSBScRLHgWjdCydjr2d08COW7rEpbDSFKSTYOzu7DtP4HfBpx8ZZh9NVH6Ui0Lp1bW+BnJclqka63waJhiSBycAmu/hnG5GsATYET1w5LzYcsUu3dL7RC+dVX80xAp1Q6NmPjubO2sAm2bxLF0aS0Ybl82dP4Z2e3tUznF5ylwO/0WMYvcmVwqdcaywC56k1/9gMum6ZVfL+kQCv17Pg1rZRamsGYWutIb2xWc++2+YeBdQvd2l7oSwerF1xB5o1HXROP65z6VueBeNwRKEDwMpYEmlTNPUy0gf/4iPHCTNuZaWophTcbJDYHlnVdAdktQbw6Va3pAkdBsb6J+yQ0aMZjct1CSvOKaM3RK7tg8Sn8fmKSZXT40MFeUY+jMWxTFFipuCsjupKdhN7yi0ER+ZdHKlWUmbgKe2l0PYHJtZ/U7vS8U=
+    on_success: always
+    on_failure: always
