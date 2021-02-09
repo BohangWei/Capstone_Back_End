@@ -102,6 +102,16 @@ def load_conversation():
 This is the endpoint through which the frontend can get all the conversation
 IDs associated with a user to be used in a successive request to the /load_conversation
 endpoint to actually populate that conversation to the message box
+
+Parameters:
+    Simple GET request with JWT in header
+
+Returns:
+    List of conversation IDs belonging to the user who is currently logged in
+    with the following JSON format:
+        {
+            c_ids: [list of conversation ids]
+        }
 """
 @bp.route('/get_c_ids', methods = ['GET'])
 @jwt_required
