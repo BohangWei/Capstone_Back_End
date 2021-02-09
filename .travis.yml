@@ -1,6 +1,6 @@
-language: python
-install:
-  - pip install -r requirements.txt
+#language: python
+#install:
+#  - pip install -r requirements.txt
 notifications:
   email: false
   slack:
