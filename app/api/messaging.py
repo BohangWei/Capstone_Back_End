@@ -15,24 +15,58 @@ adaptor = BAAdaptor("test")
 
 """
 This is the endpoint to which the frontend will send messages written by the user.
+The endpoint should be accessed via a POST request to the /messaging/send_message
+route with a JSON payload.
+
+Parameters:
+    JWT in header and following JSON payload:
+        {
+            c_id: [valid c_id]
+            msg_txt: [message string]
+        }
 """
 @bp.route('/send_message', methods = ['GET', 'POST'])
+@jwt_required
 def send_message():
     if request.method == 'GET':
         return adaptor.send_message("hello")
     elif request.method == 'POST':
-        print(request.get_json())
+        db = get_db() #Connect to database
+        username = get_jwt_identity()
+        c_id = request.get_json()['c_id']
+        message = request.get_json()['msg_txt']
 
         #Save the incoming message to their convo history in DB
+        retrieve_convo_query = 'SELECT * FROM user, conversation WHERE user.username = ? AND user.id = conversation.user AND conversation.c_id = ?'
+        convo_query_result = db.execute(retrieve_convo_query, (username, c_id)).fetchone()
+        convo_result_id = convo_query_result['c_id']
+
+        get_messages_query = 'SELECT * FROM message WHERE c_id = ?'
+        get_messages_result = db.execute(get_messages_query, (convo_result_id, )).fetchall()
+        messages = [{'msg_txt': row['txt'], 'msg_sender': row['sender'], 'msg_no': row['msg_no']} for row in get_messages_result]
+        messages.sort(key = lambda x: x['msg_no'], reverse = True)
+        last_msg_number = messages[0]['msg_no']
+        new_msg_number = last_msg_number + 1
+
+        insert_message_query = 'INSERT INTO message VALUES (?, ?, ?, ?)'
+        db.execute(insert_message_query, (new_msg_number, c_id, message, username))
+        db.commit()
 
         #Send the incoming message on to the adaptor class
+        return_message = "response to: {}".format(message)
+
+        #Save the adaptor's response to the DB
+        db.execute(insert_message_query, (new_msg_number + 1, c_id, return_message, 'binder'))
+        db.commit()
 
         #Get the returned value from the adaptor class and forward it back to the React app
-
         response = {
-            'response': 'this is the response from flask to the message: {}'.format(request.get_json()['value'])
+            'response': {
+                'msg_txt': return_message,
+                'msg_sender': 'binder',
+            }
         }
-        return(response)
+        return(jsonify(response))
 
 """
 This is the endpoint to be called when the frontend is rendering the chatbox
@@ -58,6 +92,8 @@ def load_conversation():
     messages = [{'msg_txt': row['txt'], 'msg_sender': row['sender'], 'msg_no': row['msg_no']} for row in query_result]
     messages.sort(key = lambda x: x['msg_no']) #Sort in ascending order by message number
 
+    print(messages)
+
     return jsonify({
         'messages': messages
     })
@@ -79,4 +115,6 @@ def get_c_ids():
 
     c_ids = [row['c_id'] for row in query_result]
 
-    return(jsonify(c_ids))
+    return(jsonify({
+        'c_ids': c_ids
+    }))

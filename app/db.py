@@ -4,6 +4,8 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+from werkzeug.security import check_password_hash, generate_password_hash #REMOVE AFTER TESTING
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -42,13 +44,17 @@ def init_app(app):
 if __name__ == '__main__':
     #Insert dummy data into conversation and messages
     messages = [
-        (1, 1, "hello", "me"),
+        (1, 1, "hello", "faris"),
         (2, 1, "how's it going?", "you"),
-        (3, 1, "I'm doing pretty well, can't complain", "me")
+        (3, 1, "I'm doing pretty well, can't complain", "faris")
     ]
 
     conversations = [
         (1, )
+    ]
+
+    users = [
+        ('faris', generate_password_hash('pass'))
     ]
 
     db = sqlite3.connect(
@@ -65,4 +71,9 @@ if __name__ == '__main__':
     convo_query = 'INSERT INTO conversation (user) VALUES (?)'
     for conversation in conversations:
         db.execute(convo_query, conversation)
+        db.commit()
+
+    user_query = 'INSERT INTO user (username, password) VALUES (?, ?)'
+    for user in users:
+        db.execute(user_query, user)
         db.commit()
