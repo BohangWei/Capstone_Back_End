@@ -1,5 +1,18 @@
 # Binder Backend
 
+## Running the frontend and backend together
+
+In order to run the entire binder ecosystem, you have to have **both** the React frontend and the Flask backend running simultaneously on your system. Here are the step-by-step instructions to do so. Make sure to **do each step in order**.
+
+#### 1. Running the Flask backend
+
+To run the backend, just follow the instructions below in the rest of this
+README.
+
+#### 2. Running the React frontend
+
+To run the frontend, just do `npm start` and it should show you the message history when you first open the chat window.
+
 ## Building the local environment
 
 1. Clone the repository
