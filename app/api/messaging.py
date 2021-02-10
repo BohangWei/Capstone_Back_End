@@ -11,7 +11,7 @@ from flask import (
 )
 
 bp = Blueprint('messaging', __name__, url_prefix='/messaging')
-adaptor = BAAdaptor("test")
+adaptor = BAAdaptor()
 
 """
 This is the endpoint to which the frontend will send messages written by the user.
@@ -53,7 +53,7 @@ def send_message():
         db.commit()
 
         #Send the incoming message on to the adaptor class
-        return_message = "response to: {}".format(message)
+        return_message, return_type = adaptor.send_message(message)
 
         #Save the adaptor's response to the DB
         db.execute(insert_message_query, (new_msg_number + 1, c_id, return_message, 'binder'))
@@ -91,8 +91,6 @@ def load_conversation():
     query_result = db.execute(query_str, (c_id, )).fetchall()
     messages = [{'msg_txt': row['txt'], 'msg_sender': row['sender'], 'msg_no': row['msg_no']} for row in query_result]
     messages.sort(key = lambda x: x['msg_no']) #Sort in ascending order by message number
-
-    print(messages)
 
     return jsonify({
         'messages': messages
