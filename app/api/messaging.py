@@ -82,6 +82,7 @@ Returns:
 @bp.route('/load_conversation', methods = ['GET'])
 @jwt_required
 def load_conversation():
+    print('here with valid cookie')
     db = get_db()
     username = get_jwt_identity()
     c_id = request.args.get('c_id')

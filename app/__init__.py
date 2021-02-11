@@ -14,7 +14,7 @@ def create_app(test_config = None):
     #Add configuration values
     app.config.from_mapping(
         SECRET_KEY = 'dev', #Secret key, should be replaced with something random for more security
-        DATABASE = os.path.join(app.instance_path, 'binder.sqlite') #Database path
+        DATABASE = os.path.join(app.instance_path, 'binder.sqlite'), #Database path
     )
 
     if test_config is None:

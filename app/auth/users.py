@@ -49,9 +49,10 @@ def register():
 
     #Return the JWT
     access_token = create_access_token(identity = user, expires_delta = False)
-    return {
+    resp = jsonify({
         'access_token': access_token
-    }
+    })
+    return resp
 
 """
 This is the POST request for logging a user in and obtaining the JWT.
@@ -99,6 +100,14 @@ def login():
 
     #Return the JWT
     access_token = create_access_token(identity = user, expires_delta = False)
-    return {
+    resp = jsonify({
         'access_token': access_token
-    }
+    })
+    return resp
+
+@bp.route('/uname', methods = ['GET'])
+@jwt_required
+def uname():
+    return jsonify({
+        'uname': get_jwt_identity()
+    })
