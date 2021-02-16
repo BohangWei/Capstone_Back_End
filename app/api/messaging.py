@@ -2,7 +2,7 @@ import functools
 import sqlite3
 from adaptor import BAAdaptor
 from flask_jwt_extended import (
-    jwt_required, jwt_optional, get_jwt_identity
+    jwt_required, get_jwt_identity
 )
 from app.db import get_db
 from flask import (
@@ -26,7 +26,7 @@ Parameters:
         }
 """
 @bp.route('/send_message', methods = ['GET', 'POST'])
-@jwt_required
+@jwt_required()
 def send_message():
     if request.method == 'GET':
         return adaptor.send_message("hello")
@@ -80,7 +80,7 @@ Returns:
     A JSON response of all the messages in the message history, in order
 """
 @bp.route('/load_conversation', methods = ['GET'])
-@jwt_required
+@jwt_required()
 def load_conversation():
     print('here with valid cookie')
     db = get_db()
@@ -113,7 +113,7 @@ Returns:
         }
 """
 @bp.route('/get_c_ids', methods = ['GET'])
-@jwt_required
+@jwt_required()
 def get_c_ids():
     db = get_db()
     username = get_jwt_identity()

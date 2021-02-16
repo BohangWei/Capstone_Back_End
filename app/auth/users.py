@@ -106,7 +106,7 @@ def login():
     return resp
 
 @bp.route('/uname', methods = ['GET'])
-@jwt_required
+@jwt_required()
 def uname():
     return jsonify({
         'uname': get_jwt_identity()
