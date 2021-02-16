@@ -29,6 +29,13 @@ class BAAdaptor:
             authenticator=self.authenticator
         )
 
+        #Get session
+        response = self.assistant.create_session(
+            assistant_id=self.assistant_id
+        ).get_result()
+
+        self.session_id = response['session_id']
+
         self.assistant.set_service_url(self.url)
 
     """
@@ -44,15 +51,20 @@ class BAAdaptor:
     def send_message(self, message, confidence_threshold=0.5):
 #         return "Response for: {}".format(message)
 
-        response = self.assistant.message_stateless(
+        response = self.assistant.message(
             assistant_id=self.assistant_id,
+            session_id = self.session_id,
             input={
                 'message_type': 'text',
                 'text': message
             }
         ).get_result()
 
+        print(response)
+
         intent, confidence, response, response_type = self.__read_response(response)
+
+        print(response)
 
         if confidence < confidence_threshold:
             response = "bin·dər™ Advisor doesn't understand. Please try rephrasing."
@@ -76,16 +88,18 @@ class BAAdaptor:
       response_type = None
 
 
-      if len(response['output']['intents'])>0:
-        intent = response['output']['intents'][0]['intent']
-        confidence = response['output']['intents'][0]['confidence']
-        response_type = response['output']['generic'][0]['response_type']
+      # if len(response['output']['intents'])>0:
+      #   intent = response['output']['intents'][0]['intent']
+      #   confidence = response['output']['intents'][0]['confidence']
+      #   response_type = response['output']['generic'][0]['response_type']
+      #
+      #   if response_type == 'text':
+      #       text = response['output']['generic'][0]['text']
+      #
+      #   elif response_type == 'option':
+      #       text = {item['label']:item['value']['input']['text'] for item in response['output']['generic'][0]['options']}
 
-        if response_type == 'text':
-            text = response['output']['generic'][0]['text']
-
-        elif response_type == 'option':
-            text = {item['label']:item['value']['input']['text'] for item in response['output']['generic'][0]['options']}
-
+      confidence = 1
+      text = response['output']['generic'][0]['text']
 
       return intent, confidence, text, response_type
