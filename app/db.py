@@ -44,7 +44,7 @@ def init_app(app):
 if __name__ == '__main__':
     #Insert dummy data into conversation and messages
     messages = [
-        (1, 1, "Hello! How can I help you?", "faris")
+        (1, 1, "Hello! How can I help you?", "binder")
     ]
 
     conversations = [
