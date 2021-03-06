@@ -12,9 +12,18 @@ class UserService:
     db = get_db()
 
     # add user info to database
-    query_str = 'INSERT INTO user (username, password) VALUES (?, ?)'
-    db.execute(query_str, (username, generate_password_hash(password)))
+    add_user_query = 'INSERT INTO user (username, password) VALUES (?, ?)'
+    db.execute(add_user_query, (username, generate_password_hash(password)))
     db.commit()
+
+    # get user id 
+    get_id_query = 'SELECT id FROM user WHERE (username) = (?)'
+    get_id_query_result = db.execute(get_id_query, (username,)).fetchone()
+    user_id = get_id_query_result['id']
+
+    return user_id
+
+
 
 
 

@@ -34,6 +34,7 @@ def send_message():
         db = get_db() #Connect to database
         username = get_jwt_identity()
         c_id = request.get_json()['c_id']
+        print(c_id)
         message = request.get_json()['msg_txt']
 
         #Save the incoming message to their convo history in DB

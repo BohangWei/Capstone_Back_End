@@ -46,10 +46,10 @@ def register():
         }
 
     #Store user into DB
-    user_service.add_new_user(user, pwd)
+    user_id = user_service.add_new_user(user, pwd)
 
     #Initialize conversation in DB
-    messaging_service.start_conversation(user)
+    messaging_service.start_conversation(user_id)
 
     #Return the JWT
     access_token = create_access_token(identity = user, expires_delta = False)

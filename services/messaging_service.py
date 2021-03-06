@@ -7,18 +7,18 @@ class MessagingService:
 
   pass
   
-  def start_conversation(self, username):
+  def start_conversation(self, user_id):
 
     db = get_db()
 
     # start conversation for new user
     convo_query = 'INSERT INTO conversation (user) VALUES (?)'
-    db.execute(convo_query, (username,))
+    db.execute(convo_query, (user_id,))
     db.commit()
 
     # get c_id for new user
-    get_convo_id_query = 'SELECT c_id from conversation WHERE (user) = (?)'
-    convo_id_query_result = db.execute(get_convo_id_query, (username,)).fetchone()
+    get_convo_id_query = 'SELECT c_id FROM conversation WHERE (user) = (?)'
+    convo_id_query_result = db.execute(get_convo_id_query, (user_id,)).fetchone()
     c_id = convo_id_query_result['c_id']
 
     # add initial binder message to new conversation
