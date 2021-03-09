@@ -8,8 +8,12 @@ from app.db import get_db
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity
 )
+from services import MessagingService
+from services import UserService
 
 bp = Blueprint('users', __name__, url_prefix='/user')
+messaging_service = MessagingService()
+user_service = UserService()
 
 """
 This is the POST request handler for registering a new user in the database.
@@ -42,10 +46,10 @@ def register():
         }
 
     #Store user into DB
-    query_str = 'INSERT INTO user (username, password) VALUES (?, ?)'
-    db = get_db()
-    db.execute(query_str, (user, generate_password_hash(pwd)))
-    db.commit()
+    user_id = user_service.add_new_user(user, pwd)
+
+    #Initialize conversation in DB
+    messaging_service.start_conversation(user_id)
 
     #Return the JWT
     access_token = create_access_token(identity = user, expires_delta = False)

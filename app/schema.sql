@@ -7,7 +7,7 @@ CREATE TABLE user (
 CREATE TABLE conversation (
   c_id INTEGER PRIMARY KEY AUTOINCREMENT,
   user INTEGER NOT NULL,
-  FOREIGN KEY (user) REFERENCES user(username)
+  FOREIGN KEY (user) REFERENCES user(id)
 );
 
 CREATE TABLE message (
