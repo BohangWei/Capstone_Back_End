@@ -1,6 +1,7 @@
 import functools
 import sqlite3
 from adaptor import BAAdaptor
+from adaptor import DSAdaptor
 from flask_jwt_extended import (
     jwt_required, get_jwt_identity
 )
@@ -11,13 +12,13 @@ from flask import (
 )
 
 bp = Blueprint('messaging', __name__, url_prefix='/messaging')
-adaptor = BAAdaptor()
+wa_adaptor = BAAdaptor()
+wd_adaptor = DSAdaptor()
 
 """
 This is the endpoint to which the frontend will send messages written by the user.
 The endpoint should be accessed via a POST request to the /messaging/send_message
 route with a JSON payload.
-
 Parameters:
     JWT in header and following JSON payload:
         {
@@ -29,7 +30,7 @@ Parameters:
 @jwt_required()
 def send_message():
     if request.method == 'GET':
-        return adaptor.send_message("hello")
+        return wa_adaptor.send_message("hello")
     elif request.method == 'POST':
         db = get_db() #Connect to database
         username = get_jwt_identity()
@@ -53,7 +54,16 @@ def send_message():
         db.commit()
 
         #Send the incoming message on to the adaptor class
-        return_message, return_type = adaptor.send_message(message)
+        return_message, return_type = wa_adaptor.send_message(message)
+
+        #If assistant cannot provide a input, then pass it to discovery
+        # DISCOVERY
+        if return_message.startswith("DISCOVERY"):
+            found, subtitle, infos = wd_adaptor.send_result(return_message)
+            if found:
+                return_message = "Our Discovery service has found something for you here! :) \n" + subtitle + "\n" + infos
+            else:
+                return_message = "Ooops, it seems that the course or instructor you entered is not available. Could you try with another one?"
 
         #Save the adaptor's response to the DB
         db.execute(insert_message_query, (new_msg_number + 1, c_id, return_message, 'binder'))
@@ -72,10 +82,8 @@ def send_message():
 This is the endpoint to be called when the frontend is rendering the chatbox
 for a logged in user. It will return the message history for that user, which
 can then be rendered into the chat box.
-
 Parameters:
     JWT in the header, plus query string of following format: "?c_id=[conversation id]"
-
 Returns:
     A JSON response of all the messages in the message history, in order
 """
@@ -101,10 +109,8 @@ def load_conversation():
 This is the endpoint through which the frontend can get all the conversation
 IDs associated with a user to be used in a successive request to the /load_conversation
 endpoint to actually populate that conversation to the message box
-
 Parameters:
     Simple GET request with JWT in header
-
 Returns:
     List of conversation IDs belonging to the user who is currently logged in
     with the following JSON format:
