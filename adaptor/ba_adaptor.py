@@ -66,6 +66,10 @@ class BAAdaptor:
 
         print(response)
 
+        if response == '':
+            response = "I'm sorry but Bindər™ is not recognizing your question, could you try rephrasing it?"
+            response_type = "UNDEF"
+
         if confidence < confidence_threshold:
             response = "bin·dər™ Advisor doesn't understand. Please try rephrasing."
             response_type = "UNDEF"
