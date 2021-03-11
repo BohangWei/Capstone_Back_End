@@ -34,45 +34,50 @@ class DSAdaptor:
         found = False
         subtitle = ""
         infos = ""
-        results = self.discovery.query(environment_id=self.environment_id, collection_id=c_id, filter=search_term).get_result()
 
-        if c_id=="5830fd57-758e-4966-b1c6-4ecd79924bcb":
-            if len(results["results"]) != 0:
-                course = results["results"][0]
+        if search_term != "title:":
+            results = self.discovery.query(environment_id=self.environment_id, collection_id=c_id, filter=search_term).get_result()
 
-                if "subtitle" in course:
-                    subtitle = "Course Name: " + course["subtitle"][0]
-                if "answer" in course:
-                    if len(course["answer"])!=0:
-                        infos = '; '.join(course["answer"])
+            if c_id=="5830fd57-758e-4966-b1c6-4ecd79924bcb":
+                if len(results["results"]) != 0:
+                    course = results["results"][0]
+
+                    if "subtitle" in course:
+                        subtitle = "Course Name: " + course["subtitle"][0]
+                    if "answer" in course:
+                        if len(course["answer"])!=0:
+                            infos = '; '.join(course["answer"])
+                        else:
+                            infos = "There are no specific requirements to enter the course"
                     else:
                         infos = "There are no specific requirements to enter the course"
-                else:
-                    infos = "There are no specific requirements to enter the course"
-                found = True
+                    found = True
 
-
-        elif c_id=="ba8557e9-561c-474f-aef7-7b10824de122":
-            if len(results["results"]) != 0:
-                if search_term.startswith("subtitle:"):
-                    instructors = []
-                    subtitle = "Here are the instructors who teaches/taught the course: "
-                    for result in results["results"]:
-                        if "title" in result:
-                            instructors.append(result["title"][0])
-                            infos = ', '.join(instructors)
-                elif search_term.startswith("title"):
-                    instructors = []
-                    feedbacks = []
-                    subtitle = "I found the following instructor(s) with some student feedback: "
-                    for result in results["results"]:
-                        if "title" in result:
-                            instructor = result["title"][0]
-                            infos = infos + "Instructor Name: " + instructor + "\n"
-                        if "answer" in result:
-                            feedback = result["answer"][0]
-                            infos = infos + feedback + "\n"
-                found = True
+            elif c_id=="ba8557e9-561c-474f-aef7-7b10824de122":
+                if len(results["results"]) != 0:
+                    if search_term.startswith("subtitle:"):
+                        instructors = []
+                        subtitle = "Here are the instructors who teaches/taught the course: "
+                        for result in results["results"]:
+                            if "title" in result:
+                                instructors.append(result["title"][0])
+                                infos = ', '.join(instructors)
+                    elif search_term.startswith("title"):
+                        instructors = []
+                        feedbacks = []
+                        subtitle = "I found the following instructor(s) with some student feedback: "
+                        for result in results["results"]:
+                            infos = infos + "\n"
+                            if "title" in result:
+                                instructor = result["title"][0]
+                                infos = infos + "Instructor Name: " + instructor + "\n"
+                            if "subtitle" in result:
+                                teaching = result["subtitle"][0]
+                                infos = infos + teaching + "\n"
+                            if "answer" in result:
+                                feedback = result["answer"][0]
+                                infos = infos + feedback + "\n"
+                    found = True
         return found, subtitle, infos
 
     def __extract_keyterm(self, term):

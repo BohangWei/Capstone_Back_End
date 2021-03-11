@@ -61,7 +61,7 @@ def send_message():
         if return_message.startswith("DISCOVERY"):
             found, subtitle, infos = wd_adaptor.send_result(return_message)
             if found:
-                return_message = "Our Discovery service has found something for you here! :) \n" + subtitle + "\n" + infos
+                return_message = "Here are some information that may help you! :) \n" + subtitle + "\n" + infos
             else:
                 return_message = "Ooops, it seems that the course or instructor you entered is not available. Could you try with another one?"
 
