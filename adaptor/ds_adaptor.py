@@ -82,6 +82,14 @@ class DSAdaptor:
 
     def __extract_keyterm(self, term):
         buffer = term.split(' ')
+        search_term = ""
         c_id = buffer[1]
-        search_term = buffer[2]
+
+        if term.find(" subtitle:") != -1:
+            index = term.find(" subtitle:")
+            search_term = term[index+1:]
+        elif term.find(" title:") != -1:
+            index = term.find(" title:")
+            search_term = term[index+1:]
+
         return c_id, search_term
