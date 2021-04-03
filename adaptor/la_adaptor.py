@@ -35,13 +35,15 @@ class LAAdaptor:
         message: type string
         language: type string (specify the target language)
                   Currently supports: French, Spanish, Chinese, Korean, Japanese and Hindi.
+        reverse: type boolean 
+                  if True: Non-English to English; If false: English to Non-English
     Returns:
         translation : translated text
     """
-    def send_message(self, message, language):
+    def send_message(self, message, language, reverse=False):
 #         return "Response for: {}".format(message)
 
-        mode = 'en-'+ self.list_language()[language]
+        mode = self.list_language()[language] + '-en'  if reverse else 'en-'+ self.list_language()[language] 
 
         translation = self.language_translator.translate(
             text=message,

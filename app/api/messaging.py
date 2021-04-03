@@ -2,6 +2,7 @@ import functools
 import sqlite3
 from adaptor import BAAdaptor
 from adaptor import DSAdaptor
+from adaptor import LAAdaptor
 from flask_jwt_extended import (
     jwt_required, get_jwt_identity
 )
@@ -11,9 +12,18 @@ from flask import (
     jsonify
 )
 
+language_message={"English":"(English) You are in English mode.",
+"French":"(French) Vous êtes en mode français.",
+"Spanish":"(Spanish) Estás en modo español.",
+"Chinese":"(Chinese) 您处于中文模式.",
+"Korean":"(Korean) 당신은 한국어 모드입니다.",
+"Japanese":"(Japanese) あなたは日本語モードです.",
+"Hindi":"(Hindi) आप हिंदी विधा में हैं."}
+
 bp = Blueprint('messaging', __name__, url_prefix='/messaging')
 wa_adaptor = BAAdaptor()
 wd_adaptor = DSAdaptor()
+la_adaptor = LAAdaptor()
 
 """
 This is the endpoint to which the frontend will send messages written by the user.
@@ -53,6 +63,13 @@ def send_message():
         db.execute(insert_message_query, (new_msg_number, c_id, message, username))
         db.commit()
 
+        
+        language = get_language_helper()
+        print(language)
+        # Handle non-English language
+        if language != "English":
+            message = la_adaptor.send_message(message, language, True)
+
         #Send the incoming message on to the adaptor class
         return_message, return_type = wa_adaptor.send_message(message)
 
@@ -65,11 +82,17 @@ def send_message():
             else:
                 return_message = "Ooops, it seems that the course or instructor you entered is not available. Could you try with another one?"
 
+        
+        if language != "English":
+            original_return_message = return_message
+            return_message = la_adaptor.send_message(return_message, language, False)
+            return_message = return_message + "\n------------------------------------------------------------\n" + original_return_message
+
         #Save the adaptor's response to the DB
         db.execute(insert_message_query, (new_msg_number + 1, c_id, return_message, 'binder'))
         db.commit()
 
-        #Get the returned value from the adaptor class and forward it back to the React app
+
         response = {
             'response': {
                 'msg_txt': return_message,
@@ -133,3 +156,74 @@ def get_c_ids():
     return(jsonify({
         'c_ids': c_ids
     }))
+
+
+"""
+This is the endpoint through which the language will be changed for frontend, backend and database.
+THe point of changing database is to make the language setting persist even after the user log off.
+Parameters:
+    Simple POST request with JWT in header
+Returns:
+    Language saved in json format:
+        {
+            language: language
+        }
+"""
+@bp.route('/language_change', methods = ['POST'])
+@jwt_required()
+def language_change():
+    db = get_db()
+    username = get_jwt_identity()
+    language = None
+
+    language = request.get_json()['language_info']
+    update_message_query = 'UPDATE user SET language = ? WHERE user.username = ?'
+    db.execute(update_message_query, (language, username))
+    db.commit()
+
+    return jsonify({
+        'language': language
+    })
+
+"""
+This is the endpoint through which the frontend and backend know the current language setting.
+The frontend will also print out corresponding language message.
+Parameters:
+    Simple GET request with JWT in header
+Returns:
+    Language message saved in json format:
+        {
+            language: language message (see languge_message disctionary defined above)
+        }
+"""
+@bp.route('/get_language', methods = ['GET'])
+@jwt_required()
+def get_language():
+
+    language = get_language_helper()
+
+    return jsonify({
+        'language': language_message[language]
+    })
+
+
+"""
+This is a helper function for get_language (but not an endpoint).
+It will return the language the user specified.
+Parameters:
+    JWT in header 
+Returns:
+    String: Language 
+"""
+@jwt_required()
+def get_language_helper():
+    db = get_db()
+    username = get_jwt_identity()
+    language = None
+
+    query_str = "SELECT language FROM user WHERE user.username = ?"
+    query_result = db.execute(query_str, (username, )).fetchall()
+    row = query_result[0]
+    language = row['language']
+
+    return language
