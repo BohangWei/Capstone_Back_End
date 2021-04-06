@@ -43,10 +43,12 @@ class DSAdaptor:
                     course = results["results"][0]
 
                     if "subtitle" in course:
-                        subtitle = "Course Name: " + course["subtitle"][0]
+                        subtitle = "Course Name: " + course["subtitle"]
                     if "answer" in course:
-                        if len(course["answer"])!=0:
+                        if isinstance(course['answer'], list) and len(course["answer"])!=0:
                             infos = '; '.join(course["answer"])
+                        elif isinstance(course['answer'], str) and course['answer'] != '':
+                            infos = course['answer']
                         else:
                             infos = "There are no specific requirements to enter the course"
                     else:
@@ -93,3 +95,15 @@ class DSAdaptor:
             search_term = term[index+1:]
 
         return c_id, search_term
+
+if __name__ == '__main__':
+    #Delete all documents in the CSE courses collection
+    client = DSAdaptor()
+    discovery = client.discovery
+
+    doc_list = discovery.query(environment_id = client.environment_id, collection_id = "5830fd57-758e-4966-b1c6-4ecd79924bcb").result['results']
+    print(len(doc_list))
+
+    for doc in doc_list:
+        print('deleting {}'.format(doc['id']))
+        discovery.delete_document(environment_id = client.environment_id, collection_id = "5830fd57-758e-4966-b1c6-4ecd79924bcb", document_id = doc['id'])

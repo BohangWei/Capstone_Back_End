@@ -51,6 +51,8 @@ def send_message():
         retrieve_convo_query = 'SELECT * FROM user, conversation WHERE user.username = ? AND user.id = conversation.user AND conversation.c_id = ?'
         convo_query_result = db.execute(retrieve_convo_query, (username, c_id)).fetchone()
         convo_result_id = convo_query_result['c_id']
+        user_fname = convo_query_result['fname']
+        user_lname = convo_query_result['lname']
 
         get_messages_query = 'SELECT * FROM message WHERE c_id = ?'
         get_messages_result = db.execute(get_messages_query, (convo_result_id, )).fetchall()
@@ -63,15 +65,27 @@ def send_message():
         db.execute(insert_message_query, (new_msg_number, c_id, message, username))
         db.commit()
 
-        
+
         language = get_language_helper()
         print(language)
         # Handle non-English language
         if language != "English":
             message = la_adaptor.send_message(message, language, True)
+            
+        #Define context variable dictionary
+        context = {
+            'skills': {
+                'main skill': {
+                    'user_defined': {
+                        'fname': user_fname,
+                        'lname': user_lname
+                    }
+                }
+            }
+        }
 
         #Send the incoming message on to the adaptor class
-        return_message, return_type = wa_adaptor.send_message(message)
+        return_message, return_type = wa_adaptor.send_message(message, context_dict = context)
 
         #If assistant cannot provide a input, then pass it to discovery
         # DISCOVERY
@@ -82,7 +96,7 @@ def send_message():
             else:
                 return_message = "Ooops, it seems that the course or instructor you entered is not available. Could you try with another one?"
 
-        
+
         if language != "English":
             original_return_message = return_message
             return_message = la_adaptor.send_message(return_message, language, False)
@@ -211,9 +225,9 @@ def get_language():
 This is a helper function for get_language (but not an endpoint).
 It will return the language the user specified.
 Parameters:
-    JWT in header 
+    JWT in header
 Returns:
-    String: Language 
+    String: Language
 """
 @jwt_required()
 def get_language_helper():

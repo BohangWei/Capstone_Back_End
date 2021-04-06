@@ -3,6 +3,8 @@ CREATE TABLE user (
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
   language TEXT NOT NULL DEFAULT "English"
+  fname TEXT NOT NULL,
+  lname TEXT NOT NULL
 );
 
 CREATE TABLE conversation (
