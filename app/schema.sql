@@ -1,7 +1,9 @@
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  fname TEXT NOT NULL,
+  lname TEXT NOT NULL
 );
 
 CREATE TABLE conversation (

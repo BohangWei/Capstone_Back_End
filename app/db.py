@@ -52,7 +52,7 @@ if __name__ == '__main__':
     ]
 
     users = [
-        ('faris', generate_password_hash('pass'))
+        ('faris', generate_password_hash('pass'), 'Faris', 'Rehman')
     ]
 
     db = sqlite3.connect(
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         db.execute(convo_query, conversation)
         db.commit()
 
-    user_query = 'INSERT INTO user (username, password) VALUES (?, ?)'
+    user_query = 'INSERT INTO user (username, password, fname, lname) VALUES (?, ?, ?, ?)'
     for user in users:
         db.execute(user_query, user)
         db.commit()

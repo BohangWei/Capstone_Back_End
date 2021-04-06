@@ -41,6 +41,8 @@ def send_message():
         retrieve_convo_query = 'SELECT * FROM user, conversation WHERE user.username = ? AND user.id = conversation.user AND conversation.c_id = ?'
         convo_query_result = db.execute(retrieve_convo_query, (username, c_id)).fetchone()
         convo_result_id = convo_query_result['c_id']
+        user_fname = convo_query_result['fname']
+        user_lname = convo_query_result['lname']
 
         get_messages_query = 'SELECT * FROM message WHERE c_id = ?'
         get_messages_result = db.execute(get_messages_query, (convo_result_id, )).fetchall()
@@ -53,8 +55,20 @@ def send_message():
         db.execute(insert_message_query, (new_msg_number, c_id, message, username))
         db.commit()
 
+        #Define context variable dictionary
+        context = {
+            'skills': {
+                'main skill': {
+                    'user_defined': {
+                        'fname': user_fname,
+                        'lname': user_lname
+                    }
+                }
+            }
+        }
+
         #Send the incoming message on to the adaptor class
-        return_message, return_type = wa_adaptor.send_message(message)
+        return_message, return_type = wa_adaptor.send_message(message, context_dict = context)
 
         #If assistant cannot provide a input, then pass it to discovery
         # DISCOVERY

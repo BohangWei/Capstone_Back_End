@@ -48,21 +48,37 @@ class BAAdaptor:
         response : type depending on the response_type (only supports "text" and "options" as well as "UNDEF" as of now)
         response_type : type string; the type of response
     """
-    def send_message(self, message, confidence_threshold=0.5):
+    def send_message(self, message, confidence_threshold=0.5, context_dict = None):
 #         return "Response for: {}".format(message)
 
-        response = self.assistant.message(
-            assistant_id=self.assistant_id,
-            session_id = self.session_id,
-            input={
-                'message_type': 'text',
-                'text': message
-            }
-        ).get_result()
+        response = ''
+        print(context_dict)
+        if context_dict is None:
+            response = self.assistant.message(
+                assistant_id=self.assistant_id,
+                session_id = self.session_id,
+                input={
+                    'message_type': 'text',
+                    'text': message
+                }
+            )
+        else:
+            response = self.assistant.message(
+                assistant_id=self.assistant_id,
+                session_id = self.session_id,
+                input={
+                    'message_type': 'text',
+                    'text': message,
+                    'options': {
+                        'return_context': True
+                    }
+                },
+                context = context_dict
+            )
 
         print(response)
 
-        intent, confidence, response, response_type = self.__read_response(response)
+        intent, confidence, response, response_type = self.__read_response(response.get_result())
 
         print(response)
 
