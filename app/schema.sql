@@ -1,7 +1,10 @@
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  language TEXT NOT NULL DEFAULT "English",
+  fname TEXT NOT NULL,
+  lname TEXT NOT NULL
 );
 
 CREATE TABLE conversation (

@@ -21,7 +21,10 @@ This is the POST request handler for registering a new user in the database.
 Parameters (expected in JSON format in request body):
     {
         username: [string],
-        password: [string]
+        password: [string],
+        fname: [string],
+        lname: [string],
+        language: [string]
     }
 
 Returns:
@@ -34,6 +37,9 @@ Returns:
 def register():
     user = request.json.get('username', None)
     pwd = request.json.get('password', None)
+    fname = request.json.get('fname', None)
+    lname = request.json.get('lname', None)
+    language = request.json.get('language', None)
 
     #Validate the input
     if not user:
@@ -46,7 +52,7 @@ def register():
         }
 
     #Store user into DB
-    user_id = user_service.add_new_user(user, pwd)
+    user_id = user_service.add_new_user(user, pwd, fname, lname)
 
     #Initialize conversation in DB
     messaging_service.start_conversation(user_id)
