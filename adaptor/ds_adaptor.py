@@ -80,6 +80,7 @@ class DSAdaptor:
                                 feedback = result["answer"][0]
                                 infos = infos + feedback + "\n"
                     found = True
+                infos = infos + "\nAny other questions for me?"
         return found, subtitle, infos
 
     def __extract_keyterm(self, term):
