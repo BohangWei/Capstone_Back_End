@@ -23,7 +23,8 @@ Parameters (expected in JSON format in request body):
         username: [string],
         password: [string],
         fname: [string],
-        lname: [string]
+        lname: [string],
+        language: [string]
     }
 
 Returns:
@@ -38,6 +39,7 @@ def register():
     pwd = request.json.get('password', None)
     fname = request.json.get('fname', None)
     lname = request.json.get('lname', None)
+    language = request.json.get('language', None)
 
     #Validate the input
     if not user:
@@ -48,8 +50,6 @@ def register():
         return {
             'error': 'no password given'
         }
-
-    print(user, pwd)
 
     #Store user into DB
     user_id = user_service.add_new_user(user, pwd, fname, lname)

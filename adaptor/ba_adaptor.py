@@ -76,11 +76,7 @@ class BAAdaptor:
                 context = context_dict
             )
 
-        print(response)
-
         intent, confidence, response, response_type = self.__read_response(response.get_result())
-
-        print(response)
 
         if response == '':
             response = "I'm sorry but Bindər™ is not recognizing your question, could you try rephrasing it?"
