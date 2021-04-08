@@ -68,17 +68,27 @@ class DSAdaptor:
                         instructors = []
                         feedbacks = []
                         subtitle = "I found the following instructor(s) with some student feedback: "
+
                         for result in results["results"]:
                             infos = infos + "\n"
-                            if "title" in result:
+                            if "title" in result and isinstance(result["title"], list):
                                 instructor = result["title"][0]
                                 infos = infos + "Instructor Name: " + instructor + "\n"
-                            if "subtitle" in result:
+                            else:
+                                infos = "I don't know this instructor's teaching assignments or ratings. Please refer to the CSE faculty directory for more information."
+                                subtitle = ""
+
+                            if "subtitle" in result and isinstance(result["subtitle"], list):
                                 teaching = result["subtitle"][0]
                                 infos = infos + teaching + "\n"
-                            if "answer" in result:
+
+                            if "answer" in result and isinstance(result["answer"], list):
                                 feedback = result["answer"][0]
                                 infos = infos + feedback + "\n"
+
+                    found = True
+                else:
+                    infos = "The person you requested is not in the CSE faculty."
                     found = True
                 infos = infos + "\nAny other questions for me?"
         return found, subtitle, infos
